@@ -1,5 +1,11 @@
 #   Operacoes na linguagem C
- 
+
+# Inicializacao
+def get_init(var, value):
+    cmd = []
+    cmd.append(f'int {var} = {value}')
+    return cmd
+
 # Operacoes de controle de fluxo
 def get_if(condition, cmds):
     return _get_flow("if", condition, cmds)
@@ -15,8 +21,8 @@ def get_while(condition, cmds):
 
 def get_for(iter, condition, step, cmds):
     new_cmds = []
-    condition = f'{iter} = 0; {iter} < {condition}; {iter}+{step}'
-    new_cmds = _get_flow("if", condition, cmds)
+    condition = f'int {iter} = 0; {iter} < {condition}; {iter}+={step}'
+    new_cmds = _get_flow("for", condition, cmds)
     return new_cmds
 
 def _get_flow(type, condition, cmds):
@@ -72,11 +78,15 @@ def _add_semicolons_and_newlines(cmds):
 def _add_tab(cmd, depth):
     return '\t' * depth + cmd
 
-def _add_layered_tabs(cmds, depth=0):
+def _add_layered_tabs(cmds, depth=1):
     new_cmds = []
     for cmd in cmds:
+        print(cmd)
         if isinstance(cmd, list):
-            new_cmds.append(_add_layered_tabs(cmd, depth + 1))
+            if len(cmd) > 1:
+                new_cmds.append(_add_layered_tabs(cmd, depth + 1))
+            else:
+                new_cmds.append(_add_tab(cmd[0], depth))
         else:
             new_cmds.append(_add_tab(cmd, depth))
     return new_cmds
@@ -90,9 +100,16 @@ def _join_all(cmds):
             new_cmds.append(cmd)
     return ''.join(new_cmds)
 
+# Extra
+
+def get_print(var):
+    cmd = []
+    cmd.append(f'printf("{var}: %d\\n", {var})')
+    return cmd
+
+
 # Finalizacao
 def get_final_program(cmds):
-    print(cmds)
     cmds = _add_layered_tabs(cmds)
     cmds = _add_semicolons_and_newlines(cmds)
 
